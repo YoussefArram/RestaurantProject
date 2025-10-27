@@ -1,0 +1,90 @@
+﻿@model List<Item>
+@{
+    ViewData["Title"] = "All Items";
+    var categories = ViewBag.Categories as List<string>;
+    var selectedCategory = ViewBag.SelectedCategory as string;
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">🍔 All Items</h2>
+
+        <form method="get" asp-action="GetAll" class="d-flex align-items-center gap-2">
+            <select name="category" class="form-select" style="width:200px;" onchange="this.form.submit()">
+                <option value="All" selected="@(selectedCategory == "All")">All</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c" selected="@(selectedCategory == c)">
+                        @c
+                    </option>
+                }
+            </select>
+
+        </form>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-success">+ Add New Item</a>
+        }
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 col-sm-6">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title fw-bold text-dark">@item.Name</h5>
+
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="text-muted small">@item.Description</p>
+                            }
+
+                            <p class="mb-1"><strong>💰 Price:</strong> @item.Price.ToString("C")</p>
+                            <p class="mb-1"><strong>📂 Category:</strong> @(item.category?.Name ?? "N/A")</p>
+                            <p class="mb-3">
+                                <strong>Available:</strong>
+                                @if (item.IsAvailable)
+                                {
+                                    <span class="text-success fw-bold">Yes ✅</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger fw-bold">No ❌</span>
+                                }
+                            </p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <form asp-controller="Order" asp-action="AddItemToOrder" method="post" class="d-flex align-items-center gap-2 mb-2">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <input type="number" name="quantity" value="1" min="1" class="form-control form-control-sm" style="width: 70px;" />
+                                <button type="submit" class="btn btn-primary btn-sm flex-grow-1">🛒 Add to Order</button>
+                            </form>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white">Details</a>
+                                    <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-warning text-white">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        transition: 0.3s ease;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+</style>

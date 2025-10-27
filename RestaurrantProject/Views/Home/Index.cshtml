@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .hero-section {
+        animation: fadeIn 1s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        border: none;
+    }
+
+    .btn-warning {
+        background: linear-gradient(90deg, #f7971e, #ffd200);
+        border: none;
+    }
+
+    .btn-success {
+        background: linear-gradient(90deg, #00b09b, #96c93d);
+        border: none;
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #e52d27, #b31217);
+        border: none;
+    }
+
+    .restaurant-banner {
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        transition: all 0.4s ease;
+    }
+
+        .restaurant-banner:hover {
+            transform: scale(1.02);
+        }
+</style>
+
+<div class="text-center mt-5 hero-section">
+    <h1 class="display-4 fw-bold text-dark mb-3 animate__animated animate__fadeInDown">
+        Welcome to <span class="text-primary">MyRestaurant 🍽️</span>
+    </h1>
+    <p class="lead text-muted mb-4">Order your favorite meals online easily and quickly!</p>
+
+    <div class="d-flex justify-content-center flex-wrap gap-3">
+        <a asp-controller="Items" asp-action="GetAll" class="btn btn-primary btn-lg px-4">
+            🍔 View All Items
+        </a>
+
+        <a asp-controller="Category" asp-action="GetAll" class="btn btn-warning btn-lg px-4 text-dark">
+            📂 View Categories
+        </a>
+
+        @if (User.IsInRole("Customer"))
+        {
+            <a asp-controller="Order" asp-action="MyOrders" class="btn btn-success btn-lg px-4">
+                🛒 My Orders
+            </a>
+        }
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-danger btn-lg px-4">
+                ⚙️ Admin Dashboard
+            </a>
+        }
+    </div>
+</div>
+
+<!-- Hero Image -->
+<div class="text-center mt-5">
+    <img src="~/images/restaurant-banner.jpg" alt="Restaurant Banner"
+         class="img-fluid restaurant-banner" style="max-width: 80%;">
+</div>

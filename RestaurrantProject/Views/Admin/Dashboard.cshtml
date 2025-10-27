@@ -1,0 +1,155 @@
+﻿@model RestaurrantProject.ViewModels.AdminDashboardVM
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        padding: 30px;
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        color: #333;
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeIn 0.8s ease;
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        animation: popIn 0.6s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+    .bg-total {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: #fff;
+    }
+
+    .bg-pending {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+        color: #fff;
+    }
+
+    .bg-sales {
+        background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+        color: #fff;
+    }
+
+    .bg-users {
+        background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        color: #fff;
+    }
+
+    @@keyframes popIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(255, 126, 95, 0.3);
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 14px rgba(255, 126, 95, 0.5);
+        }
+</style>
+
+<h2 class="dashboard-title">Admin Dashboard</h2>
+
+<div class="row text-center mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card p-4 shadow-sm bg-total">
+            <h4>Total Orders</h4>
+            <h2>@Model.TotalOrders</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-4 shadow-sm bg-pending">
+            <h4>Pending Orders</h4>
+            <h2>@Model.PendingOrders</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-4 shadow-sm bg-sales">
+            <h4>Total Sales</h4>
+            <h2>@Model.TotalSales.ToString("C")</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card p-4 shadow-sm bg-users">
+            <h4>Total Users</h4>
+            <h2>@Model.TotalUsers</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-3">
+        <a asp-controller="Order" asp-action="ManageOrders" class="btn btn-primary w-100 py-3">
+            Manage Orders
+        </a>
+    </div>
+    <div class="col-md-6 mb-3">
+        <a asp-action="Create" asp-controller="Items" class="btn btn-primary w-100 py-3">Create New Item</a>
+    </div>
+    <div class="col-md-6 mb-3">
+        <a asp-action="Create" asp-controller="Category" class="btn btn-primary w-100 py-3">Create New Category</a>
+    </div>
+    <div class="col-md-6 mb-3">
+        <a asp-action="GetAll" asp-controller="Category" class="btn btn-primary w-100 py-3">All Categories</a>
+    </div>
+    <div class="col-md-6 mb-3">
+        <a asp-action="GetAll" asp-controller="Items" class="btn btn-primary w-100 py-3">All Items</a>
+    </div>
+</div>

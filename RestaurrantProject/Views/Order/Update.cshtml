@@ -1,0 +1,60 @@
+﻿@model RestaurrantProject.ViewModels.UpdateOrderVM
+
+@{
+    ViewData["Title"] = "Update Order";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Update Order</h2>
+
+    <form asp-action="Update" method="post" class="border p-4 shadow-sm rounded bg-light">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="CustomerName" class="form-label"></label>
+            <input asp-for="CustomerName" class="form-control" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="OrderType" class="form-label"></label>
+            <select asp-for="OrderType" class="form-select">
+                <option value="1">Dine In</option>
+                <option value="2">Takeout</option>
+                <option value="3">Delivery</option>
+            </select>
+            <span asp-validation-for="OrderType" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="OrderStatus" class="form-label"></label>
+            <select asp-for="OrderStatus" class="form-select">
+                <option value="1">Pending</option>
+                <option value="2">InProgress</option>
+                <option value="3">Ready</option>
+                <option value="4">Completed</option>
+                <option value="5">Cancelled</option>
+            </select>
+            <span asp-validation-for="OrderStatus" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Total" class="form-label"></label>
+            <input asp-for="Total" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Total" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DeliveryAddress" class="form-label"></label>
+            <input asp-for="DeliveryAddress" class="form-control" />
+            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Update Order</button>
+        <a asp-action="ManageOrders" class="btn btn-secondary w-100 mt-2">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+<div class="d-flex flex-wrap gap-2">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-edit">
+            <i class="bi bi-pencil-square me-1"></i> Edit
+        </a>
+
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-delete">
+            <i class="bi bi-trash3 me-1"></i> Delete
+        </a>
+    }
+
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-details">
+        <i class="bi bi-info-circle me-1"></i> Details
+    </a>
+</div>
+
+<style>
+    /* زرار عام */
+    .btn {
+        border: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Edit */
+    .btn-edit {
+        background: linear-gradient(90deg, #36d1dc, #5b86e5);
+        color: white;
+    }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(91, 134, 229, 0.4);
+        }
+
+    /* Delete */
+    .btn-delete {
+        background: linear-gradient(90deg, #ff5858, #f857a6);
+        color: white;
+    }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(248, 87, 166, 0.4);
+        }
+
+    /* Details */
+    .btn-details {
+        background: linear-gradient(90deg, #11998e, #38ef7d);
+        color: white;
+    }
+
+        .btn-details:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(56, 239, 125, 0.4);
+        }
+
+    /* أيقونات */
+    .btn i {
+        font-size: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .btn:hover i {
+        transform: scale(1.2);
+    }
+</style>

@@ -1,0 +1,44 @@
+﻿@model List<Order>
+
+<h2 class="text-center mb-4">All Orders</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["Message"]</div>
+}
+
+<div class="container">
+    <div class="row g-4">
+        @foreach (var o in Model)
+        {
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Order #@o.Id</h5>
+                        <p class="card-text mb-1"><strong>Customer:</strong> @o.CustomerName</p>
+                        <p class="card-text mb-1"><strong>Status:</strong> @o.OrderStatus</p>
+                        <p class="card-text mb-1"><strong>Type:</strong> @o.OrderType</p>
+                        <p class="card-text mb-1"><strong>Total:</strong> @o.Total.ToString("C")</p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Created: @o.CreatedAt.ToLocalTime().ToString("g")
+                            </small>
+                        </p>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <a asp-action="OrderDetails" asp-route-id="@o.Id" class="btn btn-sm btn-primary">Details</a>
+                            <a asp-action="Update" asp-route-id="@o.Id" class="btn btn-sm btn-warning">Edit</a>
+
+                            <form asp-action="DeleteOrderAdmin" asp-route-id="@o.Id" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this order?');">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

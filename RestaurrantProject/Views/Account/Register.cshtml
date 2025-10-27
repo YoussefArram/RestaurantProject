@@ -1,0 +1,118 @@
+﻿@model RestaurrantProject.ViewModels.RegistrationVM
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+    }
+
+    .register-card {
+        animation: popUp 0.6s ease;
+        transition: all 0.3s ease;
+    }
+
+        .register-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+    @@keyframes popUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(255, 126, 95, 0.5);
+        }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #ff9966;
+            box-shadow: 0 0 5px rgba(255, 153, 102, 0.4);
+        }
+
+    .text-primary {
+        color: #ff7e5f !important;
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="card register-card shadow-lg border-0 rounded-4" style="width: 420px;">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary">Create Account 🌟</h2>
+                <p class="text-muted mb-0">Join us and start ordering today</p>
+            </div>
+
+            <form asp-action="Register">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Username" class="form-label fw-semibold"></label>
+                    <input asp-for="Username" class="form-control form-control-lg" placeholder="Choose a username" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control form-control-lg" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Enter a strong password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg" placeholder="Confirm your password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold shadow-sm">
+                        Create Account
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <span class="text-muted small">Already have an account?</span>
+                    <a asp-action="Login" class="text-primary fw-semibold text-decoration-none">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

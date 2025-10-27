@@ -1,0 +1,25 @@
+﻿@using RestaurrantProject.ViewModels;
+@model UpdateCategoryVM
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Update</h2>
+
+    <form asp-action="Update" asp-route-id="@Model.Id">
+        <div class="row mb-3 align-items-center">
+
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control">
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <a asp-action="getall" class="btn btn-secondary">Back to List</a>
+            <input type="submit" value="Update" class="btn btn-success" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

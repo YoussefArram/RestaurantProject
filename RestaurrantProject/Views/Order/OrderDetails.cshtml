@@ -1,0 +1,93 @@
+﻿@using RestaurrantProject.Enums
+@model Order
+
+@{
+    ViewData["Title"] = "Order Invoice";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-dark text-white text-center rounded-top-4">
+            <h2 class="mb-0">Restaurant Invoice</h2>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5><b>Order #:</b> @Model.Id</h5>
+                    <h6><b>Date:</b> @Model.CreatedAt.ToString("dd MMM yyyy - hh:mm tt")</h6>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h5><b>Customer:</b> @Model.CustomerName</h5>
+                    <h6><b>Type:</b> <span class="badge bg-primary">@Model.OrderType</span></h6>
+                    <h6>
+                        <b>Status:</b>
+                        @if (Model.OrderStatus == OrderStatus.Completed)
+                        {
+                            <span class="badge bg-success">@Model.OrderStatus</span>
+                        }
+                        else if (Model.OrderStatus == OrderStatus.Pending)
+                        {
+                            <span class="badge bg-warning text-dark">@Model.OrderStatus</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@Model.OrderStatus</span>
+                        }
+                    </h6>
+                </div>
+            </div>
+
+            <hr />
+
+            <h4 class="mb-3">Order Items</h4>
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price (EGP)</th>
+                        <th>Subtotal (EGP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.orderItems)
+                    {
+                        <tr>
+                            <td>@i.item.Name</td>
+                            <td>@i.Quanitity</td>
+                            <td>@i.item.Price.ToString("0.00")</td>
+                            <td>@i.SubTotal.ToString("0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-5">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Discount:</th>
+                            <td>@Model.Discount.ToString("0.00") EGP</td>
+                        </tr>
+                        <tr>
+                            <th>Tax (8.5%):</th>
+                            <td>@Model.Tax.ToString("0.00") EGP</td>
+                        </tr>
+                        <tr class="table-active fs-5">
+                            <th>Total:</th>
+                            <td><b>@Model.Total.ToString("0.00") EGP</b></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="text-center mt-3">
+                <p class="text-muted mb-0">Thank you for ordering with us ❤️</p>
+                <p class="small">© @DateTime.Now.Year RestaurrantProject</p>
+            </div>
+        </div>
+    </div>
+</div>

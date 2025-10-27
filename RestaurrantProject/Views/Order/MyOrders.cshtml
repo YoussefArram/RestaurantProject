@@ -1,0 +1,58 @@
+﻿@model Order
+
+<div class="container mt-5">
+    @if (Model == null)
+    {
+        <div class="alert alert-info text-center p-4 rounded-3 shadow-sm">
+            <h5>No active order yet.</h5>
+            <p>You currently have no pending orders.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h3 class="card-title mb-4 text-center text-primary">Your Pending Order</h3>
+
+                @if (Model.orderItems == null || !Model.orderItems.Any())
+                {
+                    <p class="text-muted text-center">This order has no items yet.</p>
+                }
+                else
+                {
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in Model.orderItems)
+                            {
+                                <tr>
+                                    <td>@i.item?.Name</td>
+                                    <td>@i.Quanitity</td>
+                                    <td>@i.SubTotal.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                <h5 class="text-end mt-3">
+                    <strong>Total:</strong> @Model.Total.ToString("C")
+                </h5>
+
+                <form asp-action="DeleteOrder" method="post" class="text-end mt-4">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button class="btn btn-danger px-4"
+                            onclick="return confirm('Are you sure you want to cancel this order?');">
+                        Cancel Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

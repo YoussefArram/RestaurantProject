@@ -1,0 +1,116 @@
+﻿@model dynamic
+
+<div class="item-card card shadow-lg mb-4 border-0">
+    <div class="card-body">
+        <h5 class="card-title fw-bold text-gradient">@Model.Name</h5>
+
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="card-text text-muted">@Model.Description</p>
+        }
+
+        <ul class="list-unstyled small mb-3">
+            <li><strong>💰 Price:</strong> @Model.Price.ToString("C")</li>
+            <li><strong>📦 Category:</strong> @(Model.category?.Name ?? "N/A")</li>
+            <li>
+                <strong>✅ Available:</strong>
+                @if (Model.IsAvailable)
+                {
+                    <span class="badge bg-success">Yes</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">No</span>
+                }
+            </li>
+            <li><strong>📈 Daily Orders:</strong> @Model.DailyOrderCount</li>
+        </ul>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-action btn-details">
+                <i class="bi bi-info-circle me-1"></i> Details
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-action btn-edit">
+                    <i class="bi bi-pencil-square me-1"></i> Edit
+                </a>
+
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-action btn-delete">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* === Card Style === */
+    .item-card {
+        border-radius: 15px;
+        background: #fff;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .item-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        }
+
+    .text-gradient {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* === Buttons === */
+    .btn-action {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-weight: 500;
+        color: #fff !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-details {
+        background: linear-gradient(90deg, #11998e, #38ef7d);
+    }
+
+    .btn-edit {
+        background: linear-gradient(90deg, #36d1dc, #5b86e5);
+    }
+
+    .btn-delete {
+        background: linear-gradient(90deg, #ff5858, #f857a6);
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-action i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-action:hover i {
+        transform: scale(1.2);
+    }
+</style>

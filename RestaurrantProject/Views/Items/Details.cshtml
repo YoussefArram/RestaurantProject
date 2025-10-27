@@ -1,0 +1,78 @@
+﻿@model RestaurrantProject.Models.Item
+
+@{
+    ViewData["Title"] = "Item Details";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body text-center">
+                    <h2 class="card-title text-primary fw-bold mb-3">@Model.Name</h2>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="text-muted mb-3">@Model.Description</p>
+                    }
+
+                    <ul class="list-group list-group-flush text-start mb-4">
+                        <li class="list-group-item">
+                            <strong>💰 Price:</strong> @Model.Price.ToString("C")
+                        </li>
+                        <li class="list-group-item">
+                            <strong>📂 Category:</strong> @(Model.category?.Name ?? "N/A")
+                        </li>
+                        <li class="list-group-item">
+                            <strong>📦 Available:</strong>
+                            @if (Model.IsAvailable)
+                            {
+                                <span class="text-success">Yes ✅</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger">No ❌</span>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            <strong>📅 Daily Orders:</strong> @Model.DailyOrderCount
+                        </li>
+                    </ul>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning text-white px-4">
+                                ✏️ Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger px-4">
+                                🗑️ Delete
+                            </a>
+                        }
+
+                        <a asp-action="GetAll" class="btn btn-secondary px-4">
+                            ⬅ Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+    .list-group-item {
+        background-color: transparent;
+        border: none;
+        font-size: 1rem;
+    }
+</style>

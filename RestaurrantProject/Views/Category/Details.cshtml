@@ -1,0 +1,11 @@
+﻿@model RestaurrantProject.Models.Category
+
+<h2>Category Details</h2>
+
+<div class="card shadow-sm mb-3" style="width: 20rem;">
+    <div class="card-body">
+        <h5 class="card-title text-primary">@Model.Name</h5>
+    </div>
+</div>
+
+<a asp-action="GetAll" class="btn btn-secondary mt-3">Back to List</a>
