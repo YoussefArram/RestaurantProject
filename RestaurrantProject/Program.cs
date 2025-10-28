@@ -29,6 +29,8 @@ namespace RestaurrantProject
 
             var app = builder.Build();
             app.UseSession();
+            app.UseMiddleware<RestaurrantProject.Middleware.WorkingHoursMiddleware>();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

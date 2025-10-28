@@ -26,6 +26,8 @@ namespace RestaurrantProject.Models
 
         public int PreparingTime { get; set; } = 10;
 
+        public string? ImageUrl { get; set; }
+
 
         [Required]
         [ForeignKey("CategoryID")]
