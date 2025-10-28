@@ -24,8 +24,11 @@ namespace RestaurrantProject
                 option.Password.RequireUppercase = false;
                 option.Password.RequireNonAlphanumeric = false;
             }).AddEntityFrameworkStores<MyContext>();
+            builder.Services.AddSession();
+
 
             var app = builder.Build();
+            app.UseSession();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

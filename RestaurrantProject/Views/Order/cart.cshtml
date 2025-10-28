@@ -1,0 +1,110 @@
+﻿@model List<CartItem>
+
+<h2 class="mb-4 text-center">🛒 Your Cart</h2>
+
+<!-- ✅ رسائل التنبيه -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["Error"]</div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["Success"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center p-4 rounded-3 shadow-sm">
+        <h5>Your cart is empty 🛍️</h5>
+        <a asp-action="GetAll" asp-controller="Items" class="btn btn-primary mt-3">Browse Menu</a>
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>SubTotal</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@item.SubTotal.ToString("C")</td>
+                    <td>
+                        <form asp-action="RemoveFromCart" method="post" style="display:inline;">
+                            <input type="hidden" name="itemId" value="@item.ItemID" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Remove this item from your cart?');">
+                                🗑 Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- 🧹 زرار يمسح الكارت كله -->
+    <form asp-action="ClearCart" method="post" class="text-end mb-3">
+        <button type="submit" class="btn btn-outline-danger"
+                onclick="return confirm('Are you sure you want to clear your entire cart?');">
+            🧹 Clear Cart
+        </button>
+    </form>
+
+    <!-- ✅ تأكيد الطلب -->
+    <form asp-action="ConfirmOrder" method="post" id="confirmOrderForm" class="mt-4">
+        <div class="form-group mb-3">
+            <label for="orderType"><b>Select Order Type:</b></label>
+            <select id="orderType" name="orderType" class="form-control" required>
+                <option value="">-- Choose --</option>
+                <option value="0">Dine In</option>
+                <option value="1">Delivery</option>
+                <option value="2">Take Out</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3" id="deliveryAddressDiv" style="display:none;">
+            <label for="deliveryAddress"><b>Delivery Address:</b></label>
+            <input type="text" name="deliveryAddress" id="deliveryAddress"
+                   class="form-control" placeholder="Enter your delivery address">
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">✅ Confirm Order</button>
+    </form>
+
+    <script>
+        // 🔹 إظهار أو إخفاء خانة العنوان حسب نوع الطلب
+        document.getElementById("orderType").addEventListener("change", function () {
+            var addressDiv = document.getElementById("deliveryAddressDiv");
+            if (this.value == "1") { // Delivery
+                addressDiv.style.display = "block";
+            } else {
+                addressDiv.style.display = "none";
+                document.getElementById("deliveryAddress").value = "";
+            }
+        });
+
+        // 🔹 فاليديشن قبل الإرسال
+        document.getElementById("confirmOrderForm").addEventListener("submit", function (e) {
+            var orderType = document.getElementById("orderType").value;
+            var address = document.getElementById("deliveryAddress").value.trim();
+
+            if (orderType === "1" && address === "") {
+                e.preventDefault();
+                alert("Please enter your delivery address!");
+                document.getElementById("deliveryAddress").focus();
+            }
+        });
+    </script>
+}

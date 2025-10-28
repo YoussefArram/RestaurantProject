@@ -1,58 +1,93 @@
-﻿@model Order
+﻿@using RestaurrantProject.Enums
+@model List<Order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
 
 <div class="container mt-5">
-    @if (Model == null)
+
+    <h2 class="text-center mb-4 text-primary">My Orders</h2>
+
+    @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info text-center p-4 rounded-3 shadow-sm">
-            <h5>No active order yet.</h5>
-            <p>You currently have no pending orders.</p>
+            <h5>No orders yet.</h5>
+            <p>You haven't placed any orders.</p>
         </div>
     }
     else
     {
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <h3 class="card-title mb-4 text-center text-primary">Your Pending Order</h3>
+        <div class="row g-4">
+            @foreach (var order in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-lg border-0 rounded-4 h-100">
+                        <div class="card-header bg-dark text-white rounded-top-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><b>Order #@order.Id</b></span>
+                                <span class="badge bg-primary">@order.OrderType</span>
+                            </div>
+                        </div>
 
-                @if (Model.orderItems == null || !Model.orderItems.Any())
-                {
-                    <p class="text-muted text-center">This order has no items yet.</p>
-                }
-                else
-                {
-                    <table class="table table-striped align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var i in Model.orderItems)
+                        <div class="card-body">
+                            <h6><b>Date:</b> @order.CreatedAt.ToString("dd MMM yyyy - hh:mm tt")</h6>
+                            <h6>
+                                <b>Status:</b>
+                                @if (order.OrderStatus == OrderStatus.Completed)
+                                {
+                                    <span class="badge bg-success">@order.OrderStatus</span>
+                                }
+                                else if (order.OrderStatus == OrderStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">@order.OrderStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@order.OrderStatus</span>
+                                }
+                            </h6>
+
+                            <hr />
+
+                            <h6><b>Items:</b></h6>
+                            <ul class="list-group list-group-flush small">
+                                @foreach (var item in order.orderItems)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>@item.item?.Name (x@item.Quanitity)</span>
+                                        <span>@item.SubTotal.ToString("0.00") EGP</span>
+                                    </li>
+                                }
+                            </ul>
+
+                            <hr />
+                            <div class="text-end">
+                                <h5 class="text-dark">
+                                    <b>Total:</b> @order.Total.ToString("0.00") EGP
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-light text-center">
+                            <a asp-action="Invoice" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">
+                                View Invoice
+                            </a>
+
+                            @if (order.OrderStatus == OrderStatus.Pending)
                             {
-                                <tr>
-                                    <td>@i.item?.Name</td>
-                                    <td>@i.Quanitity</td>
-                                    <td>@i.SubTotal.ToString("C")</td>
-                                </tr>
+                                <form asp-action="DeleteOrder" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('Cancel this order?');">
+                                        Cancel
+                                    </button>
+                                </form>
                             }
-                        </tbody>
-                    </table>
-                }
-
-                <h5 class="text-end mt-3">
-                    <strong>Total:</strong> @Model.Total.ToString("C")
-                </h5>
-
-                <form asp-action="DeleteOrder" method="post" class="text-end mt-4">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button class="btn btn-danger px-4"
-                            onclick="return confirm('Are you sure you want to cancel this order?');">
-                        Cancel Order
-                    </button>
-                </form>
-            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>

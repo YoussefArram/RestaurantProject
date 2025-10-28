@@ -342,3 +342,4 @@ C:\Users\Dell\source\repos\RestaurrantProject\RestaurrantProject\bin\Debug\net9.
 C:\Users\Dell\source\repos\RestaurrantProject\RestaurrantProject\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\Dell\source\repos\RestaurrantProject\RestaurrantProject\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\Dell\source\repos\RestaurrantProject\RestaurrantProject\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\Users\Dell\source\repos\RestaurrantProject\RestaurrantProject\obj\Debug\net9.0\RestaurrantProject.sourcelink.json

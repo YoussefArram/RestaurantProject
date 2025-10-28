@@ -19,7 +19,9 @@ namespace RestaurrantProject.Controllers
         [Route("AllItems")]
         public async Task<IActionResult> GetAll(string? category)
         {
-            var query = _context.Items.Include(x => x.category).AsQueryable();
+            var query = _context.Items
+                .Include(x => x.category)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(category) && category != "All")
             {
@@ -28,14 +30,18 @@ namespace RestaurrantProject.Controllers
 
             var items = await query.ToListAsync();
 
-            // نبعث اسم الكاتيجوري المختار عشان الفيو يعرف يحدده
-            ViewBag.SelectedCategory = category ?? "All";
+            
+            var availableCategories = await _context.Categories
+                .Where(c => c.items.Any(i => i.IsAvailable)) 
+                .Select(c => c.Name)
+                .ToListAsync();
 
-            // نبعث كمان كل الكاتيجوريز للفيو
-            ViewBag.Categories = await _context.Categories.Select(c => c.Name).ToListAsync();
+            ViewBag.SelectedCategory = category ?? "All";
+            ViewBag.Categories = availableCategories;
 
             return View(items);
         }
+
 
         public async Task<IActionResult> Create()
         {

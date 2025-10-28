@@ -26,43 +26,6 @@ namespace RestaurrantProject.Controllers
         }
 
 
-
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CrtOrderVM crtOrderVM)
-        {
-
-            if (!ModelState.IsValid)
-            {
-                var cats = await _context.Categories.ToListAsync();
-
-                return View(crtOrderVM);
-
-            }
-
-            else
-            {
-                Order NewOrder = new Order()
-                {
-                    //OrderStatus = crtOrderVM.OrderStatus,                    
-                    //OrderType = crtOrderVM.OrderType,
-                    //CustomerName = crtOrderVM.CustomerName,                    
-                    //Total = crtOrderVM.Total                  
-                };
-                await _context.Orders.AddAsync(NewOrder);
-                await _context.SaveChangesAsync();
-            }
-
-
-            return RedirectToAction("GetAll");
-        }
-
         public IActionResult Delete(int id)
         {
             var x = _context.Orders.FirstOrDefault(x => x.Id == id);
@@ -115,8 +78,6 @@ namespace RestaurrantProject.Controllers
         }
 
 
-        
-
 
 
 
@@ -130,39 +91,14 @@ namespace RestaurrantProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            
             if (orderType == OrderType.Delivery && string.IsNullOrWhiteSpace(deliveryAddress))
             {
                 TempData["Error"] = "Delivery orders require a delivery address.";
                 return RedirectToAction("GetAll", "Items");
             }
 
-            var order = await _context.Orders
-                .Include(o => o.orderItems)
-                .FirstOrDefaultAsync(o => o.UserID == user.Id && o.OrderStatus == OrderStatus.Pending && o.OrderType == orderType);
-
-            if (order == null)
-            {
-                order = new Order
-                {
-                    UserID = user.Id,
-                    CustomerName = user.UserName ?? "Unknown",
-                    OrderType = orderType,
-                    OrderStatus = OrderStatus.Pending,
-                    SubTotal = 0,
-                    Discount = 0,
-                    Tax = 0,
-                    Total = 0,
-                    DeliveryAddress = deliveryAddress
-                };
-
-                _context.Orders.Add(order);
-                await _context.SaveChangesAsync();
-            }
-            else if (orderType == OrderType.Delivery && string.IsNullOrWhiteSpace(order.DeliveryAddress))
-            {
-                order.DeliveryAddress = deliveryAddress;
-            }
-
+            
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemID);
             if (item == null)
                 return NotFound();
@@ -181,6 +117,7 @@ namespace RestaurrantProject.Controllers
                 return RedirectToAction("GetAll", "Items");
             }
 
+            
             item.DailyOrderCount += quanitity;
             item.LastOrderDate = DateTime.Now;
 
@@ -189,70 +126,150 @@ namespace RestaurrantProject.Controllers
                 item.IsAvailable = false;
             }
 
-            var existingItem = order.orderItems.FirstOrDefault(oi => oi.ItemID == itemID);
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            var existingItem = cart.FirstOrDefault(c => c.ItemID == itemID);
             if (existingItem != null)
             {
-                existingItem.Quanitity += quanitity;
-                existingItem.SubTotal = existingItem.Quanitity * existingItem.UnitPrice;
+                existingItem.Quantity += quanitity;
             }
             else
             {
-                order.orderItems.Add(new OrderItem
+                cart.Add(new CartItem
                 {
                     ItemID = item.Id,
-                    Quanitity = quanitity,
-                    UnitPrice = item.Price,
-                    SubTotal = item.Price * quanitity
+                    Name = item.Name,
+                    Price = item.Price,
+                    Quantity = quanitity
                 });
             }
 
-            order.SubTotal = order.orderItems.Sum(i => i.SubTotal);
-            order.Tax = order.SubTotal * 0.085m;
+            
+            decimal subTotal = cart.Sum(i => i.SubTotal);
+            decimal tax = subTotal * 0.085m;
             decimal discount = 0;
             var now = DateTime.Now;
 
             
             if (now.Hour >= 15 && now.Hour < 17)
             {
-                discount += order.SubTotal * 0.20m; 
+                discount += subTotal * 0.20m;
             }
+
+           
+            if (subTotal > 100)
+            {
+                discount += subTotal * 0.10m;
+            }
+
+            decimal total = subTotal + tax - discount;
 
             
-            if (order.SubTotal > 100)
-            {
-                discount += order.SubTotal * 0.10m; 
-            }
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
 
-            order.Discount = discount;
-            order.Total = order.SubTotal + order.Tax - order.Discount;
+            TempData["Success"] = $"Added '{item.Name}' to cart successfully! (Subtotal: {subTotal:C}, Total: {total:C})";
 
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = $"Added to {orderType} order successfully!";
             return RedirectToAction("GetAll", "Items");
         }
 
 
+        public IActionResult Cart()
+        {
+            var cart =  HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            return View(cart);
+        }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmOrder()
+        public IActionResult RemoveFromCart(int itemId)
         {
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            var itemToRemove = cart.FirstOrDefault(c => c.ItemID == itemId);
+            if (itemToRemove != null)
+            {
+                cart.Remove(itemToRemove);
+                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                TempData["Success"] = $"Removed '{itemToRemove.Name}' from your cart.";
+            }
+            else
+            {
+                TempData["Error"] = "Item not found in cart.";
+            }
+
+            return RedirectToAction("Cart");
+        }
+
+        [HttpPost]
+        public IActionResult ClearCart()
+        {
+            HttpContext.Session.Remove("Cart");
+            TempData["Success"] = "Your cart has been cleared successfully.";
+            return RedirectToAction("Cart");
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmOrder(OrderType orderType = OrderType.DineIn, string? deliveryAddress = null)
+        {
+            
             var user = await _user.GetUserAsync(User);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.UserID == user.Id && o.OrderStatus == OrderStatus.Pending);
+            
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
+            if (cart == null || !cart.Any())
+            {
+                TempData["Error"] = "Your cart is empty.";
+                return RedirectToAction("Cart");
+            }
 
-            if (order == null)
-                return RedirectToAction("Menu", "Item");
+            
+            if (orderType == OrderType.Delivery && string.IsNullOrWhiteSpace(deliveryAddress))
+            {
+                TempData["Error"] = "Please enter your delivery address before confirming your order.";
+                return RedirectToAction("Cart");
+            }
 
-            order.OrderStatus = OrderStatus.InProgress;
-            order.UpdatedAt = DateTime.UtcNow;
+            
+            var order = new Order
+            {
+                UserID = user.Id,
+                CustomerName = user.UserName ?? "Unknown",
+                OrderType = orderType,
+                OrderStatus = OrderStatus.Pending,
+                SubTotal = cart.Sum(i => i.SubTotal),
+                Tax = cart.Sum(i => i.SubTotal) * 0.085m,
+                DeliveryAddress = deliveryAddress
+            };
+
+            order.Total = order.SubTotal + order.Tax;
+
+            
+            foreach (var cartItem in cart)
+            {
+                order.orderItems.Add(new OrderItem
+                {
+                    ItemID = cartItem.ItemID,
+                    Quanitity = cartItem.Quantity,
+                    UnitPrice = cartItem.Price,
+                    SubTotal = cartItem.SubTotal
+                });
+            }
+
+            
+            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", new { id = order.Id });
+            
+            HttpContext.Session.Remove("Cart");
+
+            TempData["Success"] = "Order confirmed successfully!";
+            return RedirectToAction("GetAll", "Items");
         }
+
 
 
 
@@ -262,13 +279,18 @@ namespace RestaurrantProject.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            var order = await _context.Orders
+            var orders = await _context.Orders
                 .Include(o => o.orderItems)
                 .ThenInclude(oi => oi.item)
-                .FirstOrDefaultAsync(o => o.UserID == user.Id);
+                .Where(o => o.UserID == user.Id)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
 
-            return View(order);
+            return View(orders);
         }
+
+        
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteOrder(int id)
